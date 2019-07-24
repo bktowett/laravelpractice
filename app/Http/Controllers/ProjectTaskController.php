@@ -31,7 +31,7 @@ class ProjectTaskController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request, Project $project)
@@ -39,7 +39,7 @@ class ProjectTaskController extends Controller
         //return dd($project->id);
 
         $validated = request()->validate([
-            'description'=>['required','min:4']
+            'description' => ['required', 'min:4']
         ]);
 
         $project->addTask($validated);
@@ -54,7 +54,7 @@ class ProjectTaskController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Task  $task
+     * @param \App\Task $task
      * @return \Illuminate\Http\Response
      */
     public function show(Task $task)
@@ -65,7 +65,7 @@ class ProjectTaskController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Task  $task
+     * @param \App\Task $task
      * @return \Illuminate\Http\Response
      */
     public function edit(Task $task)
@@ -76,24 +76,26 @@ class ProjectTaskController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Task  $task
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Task $task
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Task $task)
     {
         //dd($request->all());
-        $task->update([
-            'completed' => $request->has('completed')
-        ]);
-
+        //$task->complete($request->has('completed'));
+        /* $task->update([
+             'completed' => $request->has('completed')
+         ]);*/
+        $method = $request->has('completed') ? 'complete' : 'incomplete';
+        $task->$method();
         return back();
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Task  $task
+     * @param \App\Task $task
      * @return \Illuminate\Http\Response
      */
     public function destroy(Task $task)
