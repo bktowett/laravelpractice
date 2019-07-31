@@ -11,7 +11,11 @@
 |
 */
 
-Route::get('/', function () {
+use App\Repositories\UserRepository;
+use App\Services\Twitter;
+
+Route::get('/', function (UserRepository $userRepository) {
+    dd($userRepository);
     return view('welcome');
 });
 
