@@ -7,6 +7,12 @@ use Illuminate\Http\Request;
 
 class ProjectsController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +20,7 @@ class ProjectsController extends Controller
      */
     public function index()
     {
-        $projects = \App\Project::all();
+        $projects = \App\Project::where('owner_id',auth()->id())->get();
         $title = "Projects";
         //return $projects;
         return view('projects.index', compact('projects','title'));
@@ -49,6 +55,11 @@ class ProjectsController extends Controller
             'description'=>['required','min:4']
         ]);
 
+        //dd(auth()->id());
+        $validated['owner_id'] = auth()->id();
+
+        //dd($validated);
+
         Project::create($validated);
 
         return redirect('/projects');
@@ -62,6 +73,8 @@ class ProjectsController extends Controller
      */
     public function show(Project $project)
     {
+        //abort_if($project->owner_id != auth()->id(),403);
+        $this->authorize('view',$project);
         return view('projects.show',compact('project'));
     }
 
@@ -74,6 +87,7 @@ class ProjectsController extends Controller
     public function edit(Project $project)
     {
         //return $project;
+        $this->authorize('view',$project);
         return view('projects.edit', compact('project'));
     }
 
@@ -92,7 +106,7 @@ class ProjectsController extends Controller
     }*/
     public function update(Project $project)
     {
-
+        $this->authorize('update',$project);
        $project->title = request('title');
        $project->description = request('description');
 
@@ -110,6 +124,7 @@ class ProjectsController extends Controller
      */
     public function destroy(Project $project)
     {
+        $this->authorize('view',$project);
         $project->delete();
         return redirect('/projects');
     }

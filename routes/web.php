@@ -44,8 +44,13 @@ Route::patch('/projects/{project}',"ProjectsController@update");
 Route::delete('/projects/{project}',"ProjectsController@destroy");*/
 
 //Simpler way of achieving the above
+//Route::resource('projects','ProjectsController')->middleware('can:update, project');
 Route::resource('projects','ProjectsController');
 //Route::resource('tasks','ProjectTaskController');
 Route::post('/projects/{project}/tasks','ProjectTaskController@store');
 Route::patch('/tasks/{task}','ProjectTaskController@update');
 //Route::resource('parts','PartsController');
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');
