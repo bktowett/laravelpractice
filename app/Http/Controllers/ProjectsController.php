@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\ProjectCreated;
 use App\Project;
 use Illuminate\Http\Request;
 
@@ -20,7 +21,8 @@ class ProjectsController extends Controller
      */
     public function index()
     {
-        $projects = \App\Project::where('owner_id',auth()->id())->get();
+        //$projects = \App\Project::where('owner_id',auth()->id())->get();
+        $projects = auth()->user()->projects;
         $title = "Projects";
         //return $projects;
         return view('projects.index', compact('projects','title'));
@@ -50,17 +52,22 @@ class ProjectsController extends Controller
 
         $project->save();*/
 
-        $validated = request()->validate([
+        /*$validated = request()->validate([
             'title'=>['required','min:3','max:255'],
             'description'=>['required','min:4']
-        ]);
+        ]);*/
 
-        //dd(auth()->id());
+        $validated = $this->validateProject();
+
         $validated['owner_id'] = auth()->id();
 
-        //dd($validated);
 
-        Project::create($validated);
+        $project = Project::create($validated);
+
+        //send mail when a new project is create
+       /* \Mail::to('bktowett@gmail.com')->send(
+            new ProjectCreated($project)
+        );*/
 
         return redirect('/projects');
     }
@@ -87,7 +94,7 @@ class ProjectsController extends Controller
     public function edit(Project $project)
     {
         //return $project;
-        $this->authorize('view',$project);
+        //$this->authorize('view',$project);
         return view('projects.edit', compact('project'));
     }
 
@@ -106,11 +113,17 @@ class ProjectsController extends Controller
     }*/
     public function update(Project $project)
     {
-        $this->authorize('update',$project);
+        $this->authorize('view',$project);
+        /*$validated = request()->validate([
+            'title'=>['required','min:3','max:255'],
+            'description'=>['required','min:4']
+        ]);
        $project->title = request('title');
        $project->description = request('description');
 
-       $project->save();
+       $project->save();*/
+
+        $project->update($this->validateProject());
 
        return redirect('/projects');
 
@@ -127,5 +140,13 @@ class ProjectsController extends Controller
         $this->authorize('view',$project);
         $project->delete();
         return redirect('/projects');
+    }
+
+    public function validateProject()
+    {
+        return request()->validate([
+            'title'=>['required','min:3','max:255'],
+            'description'=>['required','min:4']
+        ]);
     }
 }

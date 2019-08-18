@@ -30,6 +30,7 @@
 
         </div>
     </form>
+    @include('errors')
     <form method="post" action="/projects/{{$project->id}}">
         @method('DELETE')
         @csrf
