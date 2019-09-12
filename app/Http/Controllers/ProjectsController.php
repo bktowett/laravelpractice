@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Mail\ProjectCreated;
 use App\Project;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class ProjectsController extends Controller
 {
@@ -65,9 +66,9 @@ class ProjectsController extends Controller
         $project = Project::create($validated);
 
         //send mail when a new project is create
-       /* \Mail::to('bktowett@gmail.com')->send(
+        Mail::to($project->owner->email)->send(
             new ProjectCreated($project)
-        );*/
+        );
 
         return redirect('/projects');
     }
